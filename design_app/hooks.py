@@ -15,13 +15,13 @@ app_license = "MIT"
 # app_include_js = "/assets/design_app/js/design_app.js"
 
 app_include_css = [
-    "/assets/design_app/css/style.css",
-    "/assets/design_app/css/css_variables.css"
+    {"type": "text/css", "path": "/assets/design_app/css/style.css"},
+    {"type": "text/css", "path": "/assets/design_app/css/css_variables.css"}
 ]
 
 app_include_js = [
-    "/assets/design_app/js/custom_desk.bundle.js",
-    "/assets/design_app/js/script.js"
+    {"defer": True, "path": "/assets/design_app/js/custom_desk.bundle.js"},
+    {"defer": True, "path": "/assets/design_app/js/script.js"}
 ]
 #base_template = "templates/my_custom_base.html" 
 # include js, css files in header of web template
@@ -210,3 +210,17 @@ app_include_js = [
 # auth_hooks = [
 #	"design_app.auth.validate"
 # ]
+
+# Disable websocket auto-reconnect for development
+dev_server = {
+    'disable_websocket_auto_reconnect': True
+}
+
+# WebSocket configuration
+socketio_port = 8080
+socketio_options = {
+    "transports": ["websocket", "polling"],
+    "reconnection": True,
+    "reconnectionDelay": 1000,
+    "reconnectionDelayMax": 5000
+}

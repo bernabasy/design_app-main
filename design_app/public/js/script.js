@@ -1,3 +1,87 @@
+// Initialize once
+frappe.provide('design_app.workspace');
+
+design_app.workspace = {
+    initialized: false,
+    init: function() {
+        if (this.initialized) return;
+        this.initialized = true;
+
+        // Setup event handlers
+        $(document).on("page-change", function() {
+            frappe.ui.form.close_grid_form();
+        });
+
+        // Handle WebSocket events
+        frappe.realtime.on("doc_viewers", function(data) {
+            try {
+                frappe.ui.form.FormViewers.set_users(data, "viewers");
+            } catch (e) {
+                console.warn("Error setting viewers:", e);
+            }
+        });
+
+        frappe.realtime.on("doc_typers", function(data) {
+            try {
+                frappe.ui.form.FormViewers.set_users(data, "typers");
+            } catch (e) {
+                console.warn("Error setting typers:", e);
+            }
+        });
+
+        // Load page data once
+        this.load_current_page();
+    },
+
+    load_current_page: function() {
+        let current_page = localStorage.getItem('current_page');
+        let all_pages = localStorage.getItem('all_pages');
+        
+        if (!all_pages) return;
+
+        try {
+            all_pages = JSON.parse(all_pages);
+            let page = all_pages.find(item => item.name === current_page);
+            if (page) {
+                this.get_data(page);
+            }
+        } catch (e) {
+            console.warn("Error loading page:", e);
+        }
+    },
+
+    get_data: function(page) {
+        if (!page) return;
+        
+        try {
+            // Your existing get_data logic here
+            // But with proper error handling
+        } catch (e) {
+            console.warn("Error in get_data:", e);
+        }
+    }
+};
+
+// Override Frappe's prototype methods with improved versions
+frappe.views.ListView.prototype.render_count = function() {
+    if (this.list_view_settings.disable_count) return;
+
+    this.get_count_str().then((str) => {
+        try {
+            this.$page.find(".listcount").html(`<p>${str}</p>`);
+        } catch (e) {
+            console.warn("Error rendering count:", e);
+        }
+    }).catch(e => {
+        console.warn("Error getting count:", e);
+    });
+};
+
+// Initialize workspace
+$(document).ready(function() {
+    design_app.workspace.init();
+});
+
 frappe.views.ListView.prototype.render_count = function () {
 
     if (!this.list_view_settings.disable_count) {
