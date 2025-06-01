@@ -15,13 +15,13 @@ app_license = "MIT"
 # app_include_js = "/assets/design_app/js/design_app.js"
 
 app_include_css = [
-    {"type": "text/css", "path": "/assets/design_app/css/style.css"},
-    {"type": "text/css", "path": "/assets/design_app/css/css_variables.css"}
+    "/assets/design_app/css/style.css",
+    "/assets/design_app/css/css_variables.css"
 ]
 
 app_include_js = [
-    {"defer": True, "path": "/assets/design_app/js/custom_desk.bundle.js"},
-    {"defer": True, "path": "/assets/design_app/js/script.js"}
+    "/assets/design_app/js/custom_desk.bundle.js",
+    "/assets/design_app/js/script.js"
 ]
 #base_template = "templates/my_custom_base.html" 
 # include js, css files in header of web template
@@ -165,11 +165,6 @@ app_include_js = [
 #
 # auto_cancel_exempted_doctypes = ["Auto Repeat"]
 
-# Ignore links to specified DocTypes when deleting documents
-# -----------------------------------------------------------
-
-# ignore_links_on_delete = ["Communication", "ToDo"]
-
 # Request Events
 # ----------------
 # before_request = ["design_app.utils.before_request"]
@@ -210,11 +205,6 @@ app_include_js = [
 # auth_hooks = [
 #	"design_app.auth.validate"
 # ]
-
-# Disable websocket auto-reconnect for development
-dev_server = {
-    'disable_websocket_auto_reconnect': True
-}
 
 # WebSocket configuration
 socketio_port = 8080
