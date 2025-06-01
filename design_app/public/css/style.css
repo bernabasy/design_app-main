@@ -1042,3 +1042,316 @@ body[data-ajax-state="triggered"] .preloader {
         display: block !important;
     }
 }
+
+/* Main Navigation */
+.navbar {
+    background-color: var(--bg-primary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Sidebar */
+.maintoplistsidebar {
+    background-color: var(--sidebar-bg);
+    border-right: 1px solid var(--border-color);
+}
+
+.desk-sidebar-item.selected {
+    background-color: var(--primary-light);
+}
+
+.desk-sidebar-item.selected a {
+    color: var(--primary);
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--btn-primary);
+    border-color: var(--btn-primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--btn-primary-hover);
+    border-color: var(--btn-primary-hover);
+}
+
+/* Cards */
+.frappe-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Performance Indicators */
+.high-performance {
+    color: var(--high-performance);
+}
+
+.low-performance {
+    color: var(--low-performance);
+}
+
+/* Stats Cards */
+.stat-card {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.stat-value {
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.stat-label {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+/* Charts */
+.chart-container {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+/* Tables */
+.table thead th {
+    background-color: var(--bg-secondary);
+    color: var(--text-secondary);
+    border-bottom: 2px solid var(--border-color);
+}
+
+.table td {
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* List View */
+.list-row:hover {
+    background-color: var(--bg-light);
+}
+
+.list-row-head {
+    background-color: var(--bg-secondary);
+    color: var(--text-secondary);
+}
+
+/* Form Elements */
+.form-control {
+    border-color: var(--border-color);
+}
+
+.form-control:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+/* Tabs */
+.nav-tabs .nav-link.active {
+    color: var(--primary);
+    border-bottom: 2px solid var(--primary);
+}
+
+.nav-tabs .nav-link:hover {
+    color: var(--primary-hover);
+}
+
+/* Status Indicators */
+.indicator {
+    background-color: var(--bg-secondary);
+}
+
+.indicator-success {
+    background-color: var(--success);
+}
+
+.indicator-danger {
+    background-color: var(--danger);
+}
+
+/* Custom Dashboard Elements */
+.dashboard-stat {
+    background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+    color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.dashboard-stat .stat-value {
+    color: white;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.dashboard-stat .stat-label {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.875rem;
+}
+
+/* Performance Cards */
+.performance-card {
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+}
+
+.performance-card.high {
+    border-left: 4px solid var(--high-performance);
+}
+
+.performance-card.low {
+    border-left: 4px solid var(--low-performance);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .maintoplistsidebar {
+        position: fixed;
+        left: -100%;
+        transition: left 0.3s ease;
+    }
+
+    .maintoplistsidebar.open {
+        left: 0;
+    }
+}
+
+/* Fixed Layout Structure */
+body .main-section {
+    height: 100vh;
+    overflow: hidden;
+}
+
+body .main-section #main-body {
+    height: 100%;
+    display: flex;
+}
+
+/* Side Menu Styling */
+.layout-main.mainapp {
+    height: 100vh;
+    overflow-y: auto;
+    flex: 0 0 300px; /* Fixed width */
+    position: fixed;
+    left: 0;
+    top: 0;
+}
+
+body.closed .layout-main.mainapp {
+    flex: 0 0 100px;
+}
+
+/* Main Content Area */
+.mainapppage {
+    flex: 1;
+    margin-left: 300px; /* Match side menu width */
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+body.closed .mainapppage {
+    margin-left: 100px;
+}
+
+/* Top Navigation */
+.mainapppage .navbar {
+    flex-shrink: 0;
+}
+
+/* Content Area with Tabs */
+.layout-main-tabs-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Tab Headers */
+.layout-main-tabs-wrapper .form-wrapper {
+    flex-shrink: 0;
+    background: #fff;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Tab Content */
+.layout-main-tabs-wrapper .tab-content {
+    flex: 1;
+    overflow-y: auto;
+    background-color: var(--bg-light);
+}
+
+/* Sidebar Menu Items */
+.maintoplistsidebar {
+    height: calc(100vh - 150px); /* Adjust based on your header height */
+    overflow-y: auto;
+}
+
+.desk-sidebar {
+    padding-bottom: 20px;
+}
+
+/* Custom Scrollbar */
+.maintoplistsidebar::-webkit-scrollbar,
+.tab-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.maintoplistsidebar::-webkit-scrollbar-thumb,
+.tab-content::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb-color);
+    border-radius: 3px;
+}
+
+.maintoplistsidebar::-webkit-scrollbar-track,
+.tab-content::-webkit-scrollbar-track {
+    background-color: var(--scrollbar-track-color);
+}
+
+/* Prevent horizontal scrolling */
+.layout-main-tabs-wrapper .form-wrapper .form-inner-wrapper .container,
+.layout-main-tabs-wrapper .tab-content .container .subtabs {
+    overflow-x: hidden;
+}
+
+/* Tab Navigation */
+.nav-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+.nav-tabs::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .layout-main.mainapp {
+        position: fixed;
+        left: -300px;
+        transition: left 0.3s ease;
+        z-index: 1000;
+    }
+
+    .layout-main.mainapp.open {
+        left: 0;
+    }
+
+    .mainapppage {
+        margin-left: 0;
+    }
+
+    body.closed .mainapppage {
+        margin-left: 0;
+    }
+}

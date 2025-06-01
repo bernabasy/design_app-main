@@ -93,96 +93,145 @@ frappe.views.ListView.prototype.render_count = function () {
     }
 
 }
-frappe.ui.form.Control.prototype.make = function () {
-    this.make_wrapper();
-    this.$wrapper
-        .attr("data-fieldtype", this.df.fieldtype)
-        .attr("data-fieldname", this.df.fieldname);
-    this.wrapper = this.$wrapper.get(0);
-    if (this.wrapper) {
-        this.wrapper.fieldobj = this; // reference for event handlers
+frappe.ui.form.Control.prototype.make = function() {
+    try {
+        this.make_wrapper();
+        if (!this.$wrapper || !this.df) return;
+        
+        this.$wrapper
+            .attr("data-fieldtype", this.df.fieldtype || "")
+            .attr("data-fieldname", this.df.fieldname || "");
+            
+        this.wrapper = this.$wrapper.get(0);
+        if (this.wrapper) {
+            this.wrapper.fieldobj = this; // reference for event handlers
+        }
+    } catch (e) {
+        console.warn("Error in make:", e);
+    }
+};
+
+frappe.ui.form.Control.prototype.set_label = function(label) {
+    if (!this.df || !this.$wrapper) return;
+    
+    try {
+        if (label) {
+            this.df.label = label;
+        }
+        
+        if (this.only_input || this.df.label == this._label) return;
+        
+        var icon = "";
+        this._label = this.df.label;
+        
+        if (!this.df.label && !this.df.is_virtual) {
+            this.hide();
+            return;
+        }
+        this.show();
+        
+        if (this.label_span) {
+            this.label_span.innerHTML = this.df.label || "";
+        }
+    } catch (e) {
+        console.warn("Error in set_label:", e);
+    }
+};
+
+// Fix ListView new document creation
+frappe.views.ListView.prototype.make_new_doc = function() {
+    try {
+        if (!this.doctype) {
+            console.warn("Doctype not found for new document creation");
+            return;
+        }
+
+        const doctype = this.doctype;
+        let filters = {};
+
+        // Get filters from the filter area if it exists
+        if (this.filter_area) {
+            const filter_array = this.filter_area.get();
+            if (Array.isArray(filter_array)) {
+                filter_array.forEach(filter => {
+                    if (Array.isArray(filter) && filter.length === 4) {
+                        filters[filter[1]] = filter[3];
+                    }
+                });
+            }
+        }
+
+        // Handle specific doctypes
+        if (doctype === "Item") {
+            frappe.new_doc(doctype, {
+                is_stock_item: 1,
+                ...filters
+            });
+        } else if (doctype === "Request for Quotation") {
+            frappe.new_doc(doctype, {
+                transaction_date: frappe.datetime.get_today(),
+                ...filters
+            });
+        } else {
+            frappe.new_doc(doctype, filters);
+        }
+    } catch (e) {
+        console.error("Error creating new document:", e);
+        frappe.msgprint(__("Error creating new document. Please try again."));
+    }
+};
+
+// Override the standard new document button click handler
+frappe.views.ListView.prototype.setup_page = function() {
+    this.parent.list_view = this;
+    this.page = this.parent.page;
+    this.$page = $(this.parent);
+    !this.hide_card_layout && this.page.main.addClass("frappe-card");
+    this.page.page_form.removeClass("row").addClass("flex");
+    this.hide_page_form && this.page.page_form.hide();
+    this.hide_sidebar && this.$page.addClass("no-list-sidebar");
+    this.setup_page_head();
+
+    // Handle new document button click
+    if (this.page.add_main_action) {
+        this.page.add_main_action(__(this.doctype), () => {
+            this.make_new_doc();
+        }, 'add');
+    }
+};
+
+// Add support for quick create buttons
+$(document).on('click', '.btn-new-doc', function(e) {
+    e.preventDefault();
+    const doctype = $(this).attr('data-doctype');
+    if (doctype) {
+        frappe.new_doc(doctype);
+    }
+});
+
+// Fix page actions
+frappe.ui.Page.prototype.add_main_action = function(label, fn, icon) {
+    if (icon === void 0) icon = "add";
+
+    let button = this.page_actions.find(".primary-action");
+    if (!button.length) {
+        button = $(`<button class="btn btn-primary primary-action">
+            ${frappe.utils.icon(icon)}
+            <span class="hidden-xs">${__(label) || ""}</span>
+        </button>`);
+        button.prependTo(this.page_actions);
+    } else {
+        button.find(".hidden-xs").text(__(label) || "");
     }
 
-}
-frappe.views.BaseList.prototype.setup_paging_area = function () {
-    const paging_values = [20, 100, 500, 100];
-    this.$paging_area = $(
-        `<div class="list-paging-area level">
-            <div class="level-left">
-            </div>
-            <div class="level-right">
-                <p>Rows per page:</p>
-                <div class="btn-group">
-                    <select class="btnpaging form-control input-xs">
-                    ${paging_values.map(
-            (value) => `
-                                                <option  class="btn-paging"
-                                                    data-value="${value}" value="${value}">
-                                                    ${value}
-                                                </option>
-                                            `
-        )
-            .join("")}
-                    </select>
-                    <svg width="13.5" height="7.5" viewBox="0 0 9 5" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M0.246094 0.276665L4.52943 4.56L8.81276 0.276665H0.246094Z" fill="black" fill-opacity="0.54"/>
-                    </svg>
-                </div> 
-                <div class="listcount"></div>
-                <button class="btn btn-default btn-more btn-sm">
-                    ${__("Load More")}
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 15 20" width="15" height="18">
-                    <path d="M6.8707 2.92411V0.834822L3.71066 3.62054L6.8707 6.41071V4.31696C7.4926 4.31696 8.10841 4.42519 8.68291 
-                    4.63547C9.25741 4.84574 9.77934 5.15393 10.2189 5.54242C10.6584 5.93091 11.0069 6.39208 11.2444 6.89956C11.4819 
-                    7.40704 11.6038 7.95089 11.6032 8.5C11.6018 9.18107 11.4145 9.8518 11.0571 10.4554L12.2099 11.4732C12.8119 10.6299 
-                    13.1469 9.65944 13.1799 8.66297C13.2129 7.66651 12.9427 6.68045 12.3975 5.80749C11.8523 4.93453 11.0521 4.20659 
-                    10.08 3.69947C9.10798 3.19235 7.99974 2.9246 6.8707 2.92411ZM6.8707 12.6786C6.05432 12.6792 5.25165 12.4933 4.54068 
-                    12.1391C3.82971 11.7848 3.23463 11.2741 2.81326 10.6567C2.39189 10.0394 2.15857 9.33623 2.13597 8.61568C2.11337 
-                    7.89513 2.30225 7.18168 2.68428 6.54464L1.53149 5.52679C0.927724 6.36984 0.591359 7.34056 0.55752 8.33758C0.52368 
-                    9.3346 0.793607 10.3214 1.33912 11.1948C1.88463 12.0683 2.68571 12.7964 3.65873 13.3032C4.63175 13.81 5.74101 
-                    14.0768 6.8707 14.0759V16.1652L10.0257 13.375L6.8707 10.5893V12.6786Z" fill="#5B5B98"></path>
-                    </svg>
-                </button>
-            </div>
-        </div>`
-    ).hide();
-    this.$frappe_list.append(this.$paging_area);
-
-    // set default paging btn active
-    this.$paging_area
-        .find(`.btn-paging[data-value="${this.page_length}"]`)
-        .addClass("btn-info");
-
-    this.$paging_area.on("change", ".btnpaging", (e) => {
-
-        const $this = $(e.currentTarget);
-        console.log("e", $this.val());
-        this.start = 0;
-        this.page_length = this.selected_page_count = $this.val();
-
-        this.$paging_area.find(".btn-paging").removeClass("btn-info");
-        this.$paging_area.find(".btnpaging  option[value='" + this.page_length + "']").addClass('btn-info');
-
-        this.refresh();
-    });
-    this.$paging_area.on("click", ".btn-more", (e) => {
-        const $this = $(e.currentTarget);
-
-        if ($this.is(".btn-paging")) {
-            // set active button
-            this.$paging_area.find(".btn-paging").removeClass("btn-info");
-            $this.addClass("btn-info");
-
-            this.start = 0;
-            this.page_length = this.selected_page_count = $this.data().value;
-        } else if ($this.is(".btn-more")) {
-            this.start = this.start + this.page_length;
-            this.page_length = this.selected_page_count || 20;
-        }
-        this.refresh();
+    button.removeClass("hide").prop("disabled", false);
+    button.off('click').on('click', function() {
+        fn && fn();
     });
 
-}
+    return button;
+};
+
 frappe.views.Workspace.prototype.setup_actions = function (page) {
     let pages = page.public ? this.public_pages : this.private_pages;
     let current_page = pages.filter((p) => p.title == page.name)[0];
